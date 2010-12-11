@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<title>JSSpec results</title>
+<link rel="stylesheet" type="text/css" href="JSSpec.css" />
+<script type="text/javascript" src="diff_match_patch.js"></script>
+<script type="text/javascript" src="JSSpec.js"></script>
+<script type="text/javascript" src="propagate.js"></script>
+
+<script type="text/javascript">// <![CDATA[
+
+describe('dependency tracing', {
+	'before': function() {
+	  propagate.reset();
+		target = propagate(function(){});
+	},
+	
+	'should have no dependencies by default': function() {
+		value_of(target.composes).should_have(0, "items");
+		value_of(target.composedOf).should_have(0, "items");
+	},
+	
+	'should accurately record a dependency': function(){
+	  propagate.reset();
+	  var i = 0;
+	  var target = propagate(function(){ console.log("in target " + (i=i+1) )});
+	  target.name="target";
+	  var caller = propagate(function(){ target(); });
+	  caller.name = "caller";
+	  
+	  caller();
+	  value_of(target.composes).should_include(caller);
+	  value_of(caller.composedOf).should_include(target);
+	  
+	},
+	
+	'should accurately record different dependents': function(){
+	  propagate.reset();
+	  var i = 0;
+	  var target = propagate(function(){ return "hello"; });
+	  var caller = propagate(function(){ target() + "moon"; });
+    var callerTwo = propagate(function(){ target() + "world!"; });
+	  
+	  caller();
+	  callerTwo();
+	  
+	  value_of(target.composes).should_include(caller);
+	  value_of(target.composes).should_include(callerTwo);
+	  value_of(target.composes).should_have(2, "items");
+	},
+	
+	'should accurately record a dependent called multiple times': function(){
+	  propagate.reset();
+	  var i = 0;
+	  var target = propagate(function(){ console.log("in target " + (i=i+1) )});
+	  target.name="target";
+	  var caller = propagate(function(){ target(); });
+	  caller.name = "caller";
+	  
+	  caller();
+	  caller();
+	  caller();
+	  
+	  value_of(target.composes).should_include(caller);
+	  value_of(target.composes).should_have(1, "items");
+	  value_of(caller.composedOf).should_have(1, "items");
+	},
+});
+
+describe('propagating value changes', {
+  'before each': function(){
+    val = "hello";
+    propval = propagate(val);
+  },
+  
+  'a value should turn into a function': function() {
+		value_of(typeof(propval)).should_be("function");
+	}
+});
+
+// ]]></script>
+</head>
+<body><div style="display:none;"><p>A</p><p>B</p></div></body>
+</html>
