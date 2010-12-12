@@ -60,6 +60,8 @@ Libraries like KnockoutJS, Backbone and SproutCore are monolithic. To me, this f
   Aaron Blohowiak
   
   The spec infrastructure (but not spec itself) has a different author and license.
+  
+  This code is heavily inspired by the great work of Steve Sanderson, et al on KnockoutJs (knockoutjs.com)
 
 ## LICENSE
 
