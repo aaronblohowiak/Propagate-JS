@@ -39,6 +39,15 @@ propagate = (function(){
     fn.composedOf = [];
   };
   
+  function callDependents(wrappedFn){
+    for (var i = wrappedFn.composes.length - 1; i >= 0; i--){
+      if(typeof(wrappedFn.composes[i].fn) == "function"){
+        wrappedFn.composes[i].fn();
+        callDependents(wrappedFn.composes[i]);
+      }
+    };
+  };
+  
   function wrap(fn){
     function wrappedFn(){
       clearDependencies(wrappedFn);
@@ -57,14 +66,6 @@ propagate = (function(){
     return wrappedFn;
   };
   
-  function callDependents(wrappedFn){
-    for (var i = wrappedFn.composes.length - 1; i >= 0; i--){
-      if(typeof(wrappedFn.composes[i].fn) == "function"){
-        wrappedFn.composes[i].fn();
-        callDependents(wrappedFn.composes[i]);
-      }
-    };
-  }
   
   function wrapAsAccessor(val){
     function wrappedFn(){  
