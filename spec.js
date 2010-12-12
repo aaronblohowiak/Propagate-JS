@@ -57,6 +57,7 @@ describe('dependency tracing', {
 
 describe('propagating value changes', {
   'before each': function(){
+    propagate.reset();
     val = "hello";
     propval = propagate(val);
   },
@@ -73,9 +74,7 @@ describe('propagating value changes', {
     propval("aloha");
 		value_of(propval()).should_be("aloha");
 	},
-	
 	'should accurately record different dependents': function(){
-	  propagate.reset();
 	  var target = propagate("hello");
 	  var caller = propagate(function(){ target() + "moon"; });
     var callerTwo = propagate(function(){ target() + "world!"; });
@@ -89,7 +88,6 @@ describe('propagating value changes', {
 	},
 	
 	'should call dependents': function(){
-    propagate.reset();
     var outOne = '';
     var outTwo = '';
     var target = propagate("hello");
@@ -108,7 +106,6 @@ describe('propagating value changes', {
 	},
 	
 	'should track dependents through non-instrumened functions.': function(){
-    propagate.reset();
     var outOne = '';
     var outTwo = '';
     var target = propagate("hello");
@@ -124,7 +121,6 @@ describe('propagating value changes', {
 	},
 	
 	'should call dependents\' dependents': function(){
-    propagate.reset();
     var outOne = '';
     var outTwo = '';
     var target = propagate("hello");
@@ -163,4 +159,10 @@ describe('propagating value changes', {
   //     value_of(outOne).should_be("aloha moon, aloha");
   //     value_of(callcount).should_be(2);
   // }
+});
+
+describe('object instrumenting tracing', {
+	'before each': function() {
+	  propagate.reset();
+	}
 });

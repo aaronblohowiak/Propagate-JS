@@ -16,7 +16,6 @@ propagate = (function(){
     return null;
   };
   
-  
   function trace(accessed){
     var tracingStackDepth = tracingStack.length;
   
@@ -28,7 +27,6 @@ propagate = (function(){
        //console.log("tracing", caller.fn.toString(), "adding dependent", accessed.fn.toString());
     };
   };
-  
   
   function clearDependencies(fn){
     var child = null;
@@ -63,7 +61,7 @@ propagate = (function(){
     for (var i = wrappedFn.composes.length - 1; i >= 0; i--){
       if(typeof(wrappedFn.composes[i].fn) == "function"){
         wrappedFn.composes[i].fn();
-        callDependents(wrappedFn.composes[i])
+        callDependents(wrappedFn.composes[i]);
       }
     };
   }
