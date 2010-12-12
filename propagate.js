@@ -1,6 +1,10 @@
+if (typeof console == "undefined" || typeof console.log == "undefined")
+  var console = { log: function() {} };
+  
 propagate = (function(){
   var tracingStack = [];
   
+  //utility function that removes an item from an array on obj
   function removeFromArray(obj, name, item){
     var i = 0;
     while(i < obj[name].length){
@@ -9,7 +13,9 @@ propagate = (function(){
       }
       i = i+1;
     }
+    return null;
   };
+  
   
   function trace(accessed){
     var tracingStackDepth = tracingStack.length;
@@ -19,7 +25,7 @@ propagate = (function(){
        accessed.composes.push(caller);
        caller.composedOf.push(accessed);
        
-       console.log("tracing", caller.fn.toString(), "adding dependent", accessed.fn.toString());
+       //console.log("tracing", caller.fn.toString(), "adding dependent", accessed.fn.toString());
     };
   };
   
@@ -53,6 +59,15 @@ propagate = (function(){
     return wrappedFn;
   };
   
+  function callDependents(wrappedFn){
+    for (var i = wrappedFn.composes.length - 1; i >= 0; i--){
+      if(typeof(wrappedFn.composes[i].fn) == "function"){
+        wrappedFn.composes[i].fn();
+        callDependents(wrappedFn.composes[i])
+      }
+    };
+  }
+  
   function wrapAsAccessor(val){
     function wrappedFn(){  
       
@@ -61,15 +76,12 @@ propagate = (function(){
         return val;
       }else{
         val = arguments[0];
-        console.log("I need to re-evaluate these:");
-        for (var i = wrappedFn.composes.length - 1; i >= 0; i--){
-          console.log(wrappedFn.composes[i].fn.toString());
-        };
+        callDependents(wrappedFn);
       }
-      return result;
+      return val;
     }
 
-    wrappedFn.val = val;
+    wrappedFn.fn = function(){ return val; }; //for completeness
     wrappedFn.composedOf = []; //should always be empty!
     wrappedFn.composes = [];
     return wrappedFn;
