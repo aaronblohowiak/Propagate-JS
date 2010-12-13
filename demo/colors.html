@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+  "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="/reset.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="propagate.js" type="text/javascript" charset="utf-8"></script>
+  <script src="jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="jquery.color.min.js" type="text/javascript" charset="utf-8"></script>
+  
+	<title>propogate-js</title>
+	<meta name="author" content="Aaron Blohowiak">
+  <style>
+    .swatches div{
+      width:100px;
+      height:100px;
+      border: 1px solid #ccc;
+    }
+    
+    th{
+      text-align:left;
+    }
+  </style>
+</head>
+
+
+  <table width="100%">
+    <tbody>
+      <tr class="swatches">
+        <td>
+          <span class="label">r <span class="r-int"/></span>  
+          <div id="r"/>
+        </td>
+        <td>
+          <span class="label">g <span class="g-int"/></span>
+          <div id="g"/>
+        </td>
+        <td>
+          <span class="label">b <span class="b-int"/></span>
+          <div id="b"/>
+        </td>
+        <td>
+          <span class="label">combined <span id="combined-hex"/></span>
+          <div id="combined"/>
+        </td>
+      </tr>
+      <tr>
+        <td rowspan=5 colspan=3>
+          <div id="controls">
+            
+          </div>           
+        </td>
+        <td class="swatches">
+          <span class="label">complementary <span id="complementary-hex"/></span>
+          <div id="complementary"/>
+        </td>
+      </tr>
+      <tr class="swatches">
+        <td>
+          <span class="label">analog 1<span id="analog1-hex"/></span>
+          <select class="analog-selector" id="analog1-selector"><option value="0.08333333333333333">1/12</option><option value="0.16666666666666666">2/12</option><option value="0.25">3/12</option><option value="0.3333333333333333">4/12</option><option value="0.4166666666666667">5/12</option><option value="0.5">6/12</option><option value="0.5833333333333334">7/12</option><option value="0.6666666666666666">8/12</option><option value="0.75">9/12</option><option value="0.8333333333333334">10/12</option><option value="0.9166666666666666">11/12</option></select>
+          
+          <div id="analog1"/>
+        </td>
+      </tr>
+      <tr class="swatches">
+        <td>
+          <span class="label">analog 2 <span id="analog2-hex"/></span>
+          <select class="analog-selector" id="analog2-selector"><option value="0.08333333333333333">1/12</option><option value="0.16666666666666666">2/12</option><option value="0.25">3/12</option><option value="0.3333333333333333">4/12</option><option value="0.4166666666666667">5/12</option><option value="0.5">6/12</option><option value="0.5833333333333334">7/12</option><option value="0.6666666666666666">8/12</option><option value="0.75">9/12</option><option value="0.8333333333333334">10/12</option><option value="0.9166666666666666" selected>11/12</option></select>
+          <div id="analog2"/>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<body>
+  
+  <script>
+    // main data structure that all of the ui is based on
+    // we have three concrete values, and three derrived values
+    var color = {
+      r: propagate(160),
+      g: propagate(90),
+      b: propagate(45),
+      h: propagate(function(){
+        return hsvByte(0);
+      }),
+      s: propagate(function(){
+        return hsvByte(1);
+      }),
+      v: propagate(function(){
+        return hsvByte(2);
+      })
+    };
+    
+    var analogOffsets = {
+      1: propagate(30/360.0),
+      2: propagate(330/360.0)
+    };
+    
+    //activate HSV propagation!
+    $('hsv'.split('')).each(function(i, c){
+      color[c]();
+    });
+    
+    //convienence for returning a 0-255 normalized version of HSV (0.0 - 1.0)
+    function hsvByte(index){
+      return Math.floor($.Color(colorString()).toHSV()[index] * 255);
+    }
+    
+    //takes a byte and makes sure it is between 0 - 255 (no overages or <0 )
+    function byteConstrain(input){
+      return Math.max(Math.min(input, 255), 0 );
+    }
+    
+    //return a 00-FF hex representation of a byte
+    function toOctet(n){
+      var str = (n % 256).toString(16);
+      if(str.length < 2){
+        str = "0"+str;
+      }
+      return str;
+    }
+
+    //return the RGB hex code of a color.
+    function colorString(){
+      return "#" + toOctet(color.r()) + toOctet(color.g()) + toOctet(color.b());
+    }
+
+    var updateColor = propagate(function(){
+      $('#combined').css({backgroundColor: colorString()});
+      $('#combined-hex').html(colorString());
+    });
+    
+    var updateComplementary = propagate(function(){
+      var complementary = $.Color(colorString()).complementary().toHEX();
+      $('#complementary-hex').html(complementary);
+      $('#complementary').css({backgroundColor: complementary});
+    });
+    
+    //generate some buttons for user input
+    function createControl(space, channel, num, valence){
+      return $('<input class="controller" type="submit" data-channel="'+num+'" data-valence="'+valence+'" value="'+channel+': '+valence+'16" data-space="'+space+'"/>');
+    }
+      
+    //generate live controls for rgb, hsv
+    $(['RGB', 'HSV']).each(function(index, space){
+      var spacediv = $('<div>'+space+'</div>');
+
+      $(space.split('')).each(function(num, channel){
+        var plus  = createControl(space, channel, num, '+');
+        var minus = createControl(space, channel, num, '-');
+        var div = $('<div/>');
+        div.append(plus).append(minus).append($('<span> current '+channel+' value: <span class="'+channel.toLowerCase()+'-int"/></span></span>'));
+        spacediv.append(div);
+      });
+      
+      $('#controls').append(spacediv);
+    });
+
+
+      
+    $('#controls .controller').live('click', function(){
+      var space = $(this).attr('data-space');
+      var chan = $(this).attr('data-channel');
+      var valence = $(this).attr('data-valence');
+      
+      // calculate the difference
+      var delta = parseInt(valence + (16).toString(), 10); 
+      
+      var current, channel, fn, newValue, modificationArray;
+
+      console.log("Color space %s, channel %s, modifying %s8", space, chan, valence);
+      
+      if(space=="RGB"){
+        channel = 'rgb'.charAt(chan); //convert from index to name
+        fn = color[channel]; //get the accessor
+        current = fn(); //get the current value
+        newValue = byteConstrain(current + delta);
+        fn(newValue); // call the setter with the new val, 
+      }else{
+        hsv = $.Color(colorString()).toHSV();
+        current = 255.0 * hsv[chan];
+        newValue = current + delta;
+        modificationArray = [null, null, null]; //stupid API for the color plugin
+        modificationArray[chan] = byteConstrain(newValue) / 255.0;
+        
+        hsv = hsv.modify(modificationArray);
+        color.r(hsv.red());
+        color.g(hsv.green());
+        color.b(hsv.blue());
+      }
+      return false;
+    });
+      
+      //make it so that our labels will update automagically!
+      //  i can add these in whatever module I'd like
+      //  no worrying about callback registration or anything.
+      $('rgbhsv'.split('')).each(function(num, channel){
+        propagate(function(){
+          var myInt = color[channel]();
+          $('.'+channel+'-int').html(myInt);     
+        })();
+      });
+      
+      //stylize color swatches for rgb
+      $('rgb'.split('')).each(function(num, channel){
+        propagate(function(){
+          var bg='#';
+          var myInt = color[channel]();
+          var myHex = toOctet(myInt);
+          //construct hex that has the info for just the current color channel
+          //   and 00 for the other channels
+          $([0,1,2]).each(function(index, value){         
+            if(num == value){
+              bg = bg + myHex;
+            }else{
+              bg = bg + "00";
+            }
+          });       
+          $('#'+channel).css({backgroundColor: bg});
+         })();
+       });
+      
+      //kick off our updaters
+      updateColor();
+      updateComplementary();
+      
+      
+      //-------------------
+      //this is all the code required then to add automatic updating of analogs
+      //  note that it doesnt have to worry about registering for rgb callbacks
+      //    (that dependency is detected from colorString())
+      //  also note that the callback for the event handler just sets values
+      //  this way you just code the relationships between events and data
+      //  and then the relationships between data and the view
+      //  you keep these two things separate so it is nice and clean.
+      //  this also lets you add other parts to the view
+      //  without changing the event handling code
+      //-------------------
+      
+      //set the swatch and the label appropriately
+      var updateAnalogous = propagate(function(){
+        $([1,2]).each(function(i, value){
+          var currentValue = parseFloat(analogOffsets[value]());        
+          var analog = $.Color(colorString()).analogous(currentValue).toHEX();
+          
+          $('#analog'+value.toString()+'-hex').html(analog);
+          $('#analog'+value.toString()).css({backgroundColor: analog});
+        })
+      });
+      updateAnalogous();
+      
+      //set up analog binding to selectors
+      function updateAnalogOffsetsFromSelects(){
+        analogOffsets[1]($('#analog1-selector').val());
+        analogOffsets[2]($('#analog2-selector').val());
+      }
+
+      $('.analog-selector').live('change', updateAnalogOffsetsFromSelects);
+      updateAnalogOffsetsFromSelects();
+  </script>
+</body>
+</html>

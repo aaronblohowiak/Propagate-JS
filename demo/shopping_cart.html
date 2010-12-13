@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+  "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="/reset.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="propagate.js" type="text/javascript" charset="utf-8"></script>
+  <script src="jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
+	
+	<title>propogate-js</title>
+	<meta name="author" content="Aaron Blohowiak">
+</head>
+
+<body>
+  
+  <form onsubmit="add(); return false;">
+    <input id="quantity"></input>
+    <input type="submit" name="Add" value="Add to subtotal" />
+  </form>
+  
+  <ul>
+    <li>SubTotal: <span id="subtotal" /></li>
+    <li>Tax: <span id="tax" /></li>
+    <li>Total: <span id="total" /></li>
+  </ul>
+
+  <span id="freeShippingAd" style="color:#666;font-size:18px;">Add <span id="dollarsToGo">0</span> more to your order and get free shipping.</span>
+  <span id="freeShipping" style="display:none;color:green;font-size:30px;">Congrats! your order qualifies for free shipping!!!</span>
+
+  <script>
+    var subtotal = propagate(0);
+    var taxRate = propagate(0.10);
+
+    var calculateTax = propagate(function(){
+       return subtotal() * taxRate();
+    });
+    
+    var calculateTotal = propagate(function(){
+      return subtotal() + calculateTax();
+    });
+    
+    function freeShipping(){
+      return subtotal() > 20.0;
+    }
+      
+    var updateNumbers = propagate(function(){
+      $('#subtotal').html(dollars(subtotal()));
+      $('#tax').html(dollars(calculateTax()));
+      $('#total').html(dollars(calculateTotal()));
+    });
+    
+    var updateFreeShipping = propagate(function(){
+      if(freeShipping()){
+        $('#freeShipping').show();
+        $('#freeShippingAd').hide();
+      }else{
+        $('#dollarsToGo').html(dollars(20.00 - subtotal()));
+        $('#freeShipping').hide();
+      }
+    });
+    
+    function add(){
+      var quantity = parseFloat($('#quantity').val());
+      subtotal(subtotal() + quantity);
+      $('#quantity').val('');
+    };
+    
+    function dollars(f){
+      f = parseFloat(f).toFixed(2);
+      return "$"+f;
+    };
+    
+    updateNumbers();
+    updateFreeShipping();
+    
+  </script>
+</body>
+</html>
