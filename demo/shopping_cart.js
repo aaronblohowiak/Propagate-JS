@@ -134,7 +134,7 @@ taxSelectorChange();//some browsers might cache the form selection
 function add(){
   var quantity = parseFloat($('#quantity').val());
   
-  if(! isNaN(quantity)){ //input validation, for Spencer
+  if(isNaN(quantity)){ //input validation, for Spencer
     alert('enter a number, please');
   }else{
     subtotal(subtotal() + quantity);    
