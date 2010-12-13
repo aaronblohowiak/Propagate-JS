@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>shopping_cart.js</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id="background"></div>
+<div id='container'>
+  
+  <div class='section'>
+    <div class='docs'><h1>shopping_cart.js</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>This file covers
+a <em>minimal</em> example of how reactive programming can make your programs shorter.</p>
+<p>Skip to the <a href="#data-model-first">Data Model</a>, <a href="#view-code">View Code</a> or <a href="#processing-input">Processing Input(controller)</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h3><span id="data-model-first" href="data-model-first"> Data Model First </span></h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>We start by creating a couple of live values.
+We can then access these values by calling <code>subtotal()</code> or <code>taxRate()</code>.
+Note the parenthesis. We'll go over how to change the values later.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">var</span> <span class="nx">subtotal</span> <span class="o">=</span> <span class="nx">propagate</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">taxRate</span> <span class="o">=</span> <span class="nx">propagate</span><span class="p">(</span><span class="mf">0.06</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Then, within the next few functions we just use our new accessors to calculate some things.</p>
+<p>These four functions are only acting on data and return numerical values; no view code at all.</p>
+<p>Note that these calculation functions dont have to be wrapped with <code>propagate();</code>,
+this is because they don't have any side-effects:
+running them over and over again wouldn't really change anything,
+so there is no need to track them directly with <code>propagate();</code></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">var</span> <span class="nx">calculateTax</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+   <span class="k">return</span> <span class="nx">subtotal</span><span class="p">()</span> <span class="o">*</span> <span class="nx">taxRate</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">calculateTotal</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="k">return</span> <span class="nx">subtotal</span><span class="p">()</span> <span class="o">+</span> <span class="nx">calculateTax</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">freeShipping</span><span class="p">(){</span>
+  <span class="k">return</span> <span class="nx">subtotal</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">20.0</span><span class="p">;</span>
+<span class="p">};</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>This is the best way to do currency formatting, by the way.
+If you use a for-loop when you need to output 0.00, you're doing it wrong.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">function</span> <span class="nx">dollars</span><span class="p">(</span><span class="nx">f</span><span class="p">){</span>
+  <span class="nx">f</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">f</span><span class="p">).</span><span class="nx">toFixed</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+  <span class="k">return</span> <span class="s2">&quot;$&quot;</span><span class="o">+</span><span class="nx">f</span><span class="p">;</span>
+<span class="p">};</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <h3><span id="view-code" href="view-code"> View Code </span></h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Here we set the inner html of some spans to a formatted currency.</p>
+<p>Here we <em>do</em> wrap our function declaration with <code>propagate();</code> because we want this function to be re-run <em>any time its dependencies change</em>.</p>
+<p>In this case, this function depends on <code>subtotal()</code>, <code>calculateTax()</code> and <code>calculateTotal()</code>.
+We are tracking <code>subtotal()</code> but we aren't tracking <code>calculateTax()</code> directly.</p>
+<p>How will we know to re-run this function if the rax rate changes?</p>
+<p>Well, <code>calculateTax()</code> calls <code>subTotal()</code> and <code>taxRate()</code>, both of which we <em>are</em> tracking.
+<code>propagate()</code> can track dependencies through arbitrarily-deep call stacks.
+When either <code>subTotal()</code> or <code>taxRate()</code> change,
+any tracked function that called <code>calculateTax()</code> will get re-run.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">var</span> <span class="nx">updateNumbers</span> <span class="o">=</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#subtotal&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">dollars</span><span class="p">(</span><span class="nx">subtotal</span><span class="p">()));</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#tax&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">dollars</span><span class="p">(</span><span class="nx">calculateTax</span><span class="p">()));</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#total&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">dollars</span><span class="p">(</span><span class="nx">calculateTotal</span><span class="p">()));</span>
+<span class="p">});</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>This function toggles the visibility of the <em>free shipping</em> notifications.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">var</span> <span class="nx">updateFreeShipping</span> <span class="o">=</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">freeShipping</span><span class="p">()){</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#freeShipping&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#freeShippingAd&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#dollarsToGo&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">dollars</span><span class="p">(</span><span class="mf">20.00</span> <span class="o">-</span> <span class="nx">subtotal</span><span class="p">()));</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#freeShipping&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">});</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Just one initial call to get things wired up.
+ we never have to call these again!
+ if our data changes, that change will propagate up </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nx">updateNumbers</span><span class="p">();</span>
+<span class="nx">updateFreeShipping</span><span class="p">();</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <h3><span id="processing-input" href="processing-input"> Processing Input </span>(Controller)</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>This is just about the coolest thing.  Here we add the handling for changing the tax rate.</p>
+<p>In these few lines of code, we set up an event handler that pushes the value into our data model.
+...
+And that's it!  No funky callback registration or having to worry about what part of the UI we have to update, we just take events and push their impact into our data model.  That is what a controller should be!</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">function</span> <span class="nx">taxSelectorChange</span><span class="p">(){</span>
+  <span class="nx">taxRate</span><span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#tax-selector&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()));</span>
+<span class="p">}</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#tax-selector&#39;</span><span class="p">).</span><span class="nx">live</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">taxSelectorChange</span><span class="p">);</span>
+<span class="nx">taxSelectorChange</span><span class="p">();</span><span class="c1">//some browsers might cache the form selection</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>This will validate the input and add the purchase price to our subtotal,
+everything else will get run automagically.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">function</span> <span class="nx">add</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">quantity</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#quantity&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
+  
+  <span class="k">if</span><span class="p">(</span><span class="o">!</span> <span class="nb">isNaN</span><span class="p">(</span><span class="nx">quantity</span><span class="p">)){</span> <span class="c1">//input validation, for Spencer</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;enter a number, please&#39;</span><span class="p">);</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+    <span class="nx">subtotal</span><span class="p">(</span><span class="nx">subtotal</span><span class="p">()</span> <span class="o">+</span> <span class="nx">quantity</span><span class="p">);</span>    
+  <span class="p">}</span>
+
+  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#quantity&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+<span class="p">};</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>(c) Aaron Blohowiak 2010</p>
+<p>Prepared using my fork of Pycco, which is itself a port of Docco.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>propagate.js</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id="background"></div>
+<div id='container'>
+  
+  <div class='section'>
+    <div class='docs'><h1>propagate.js</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>utility function that removes an item from an array on obj</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  <span class="kd">function</span> <span class="nx">removeFromArray</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">item</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">length</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">name</span><span class="p">][</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">item</span><span class="p">){</span>
+        <span class="k">return</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="nx">i</span> <span class="o">=</span> <span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">};</span>
+  
+  <span class="kd">function</span> <span class="nx">trace</span><span class="p">(</span><span class="nx">accessed</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">tracingStackDepth</span> <span class="o">=</span> <span class="nx">tracingStack</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+  
+    <span class="k">if</span><span class="p">(</span> <span class="nx">tracingStackDepth</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+       <span class="kd">var</span> <span class="nx">caller</span> <span class="o">=</span> <span class="nx">tracingStack</span><span class="p">[</span> <span class="nx">tracingStackDepth</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">];</span>
+       <span class="nx">accessed</span><span class="p">.</span><span class="nx">composes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">caller</span><span class="p">);</span>
+       <span class="nx">caller</span><span class="p">.</span><span class="nx">composedOf</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">accessed</span><span class="p">);</span>
+       </pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>console.log("tracing", caller.fn.toString(), "adding dependent", accessed.fn.toString());</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="p">};</span>
+  <span class="p">};</span>
+  
+  <span class="kd">function</span> <span class="nx">clearDependencies</span><span class="p">(</span><span class="nx">fn</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">child</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">composedOf</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">child</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">composedOf</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+      <span class="nx">removeFromArray</span><span class="p">(</span><span class="nx">child</span><span class="p">,</span> <span class="s2">&quot;composes&quot;</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span>
+    <span class="p">};</span>
+    
+    <span class="nx">fn</span><span class="p">.</span><span class="nx">composedOf</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="p">};</span>
+  
+  <span class="kd">function</span> <span class="nx">callDependents</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">){</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composes</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composes</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">fn</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">){</span>
+        <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composes</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">fn</span><span class="p">();</span>
+        <span class="nx">callDependents</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composes</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+      <span class="p">}</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+  
+  <span class="kd">function</span> <span class="nx">wrap</span><span class="p">(</span><span class="nx">fn</span><span class="p">){</span>
+    <span class="kd">function</span> <span class="nx">wrappedFn</span><span class="p">(){</span>
+      <span class="nx">clearDependencies</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">);</span>
+      
+      <span class="nx">trace</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">);</span>
+      
+      <span class="nx">tracingStack</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">();</span>
+      <span class="nx">tracingStack</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">fn</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">;</span>
+    <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composedOf</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composes</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">return</span> <span class="nx">wrappedFn</span><span class="p">;</span>
+  <span class="p">};</span>
+  
+  
+  <span class="kd">function</span> <span class="nx">wrapAsAccessor</span><span class="p">(</span><span class="nx">val</span><span class="p">){</span>
+    <span class="kd">function</span> <span class="nx">wrappedFn</span><span class="p">(){</span>  
+      
+      <span class="k">if</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="nx">trace</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">val</span><span class="p">;</span>
+      <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="nx">val</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+        <span class="nx">callDependents</span><span class="p">(</span><span class="nx">wrappedFn</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">val</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">fn</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span> <span class="k">return</span> <span class="nx">val</span><span class="p">;</span> <span class="p">};</span> <span class="c1">//for completeness</span>
+    <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composedOf</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">//should always be empty!</span>
+    <span class="nx">wrappedFn</span><span class="p">.</span><span class="nx">composes</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">return</span> <span class="nx">wrappedFn</span><span class="p">;</span>
+  <span class="p">};</span>
+  
+  <span class="kd">function</span> <span class="nx">propagate</span><span class="p">(</span><span class="nx">arg</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">){</span>
+      <span class="k">return</span> <span class="nx">wrap</span><span class="p">(</span><span class="nx">arg</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="k">return</span> <span class="nx">wrapAsAccessor</span><span class="p">(</span><span class="nx">arg</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  
+  <span class="nx">propagate</span><span class="p">.</span><span class="nx">reset</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">tracingStack</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nx">traced</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="p">};</span>
+  
+  <span class="k">return</span> <span class="nx">propagate</span><span class="p">;</span>
+<span class="p">})();</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
