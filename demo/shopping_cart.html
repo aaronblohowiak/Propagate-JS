@@ -61,7 +61,7 @@
     
     function add(){
       var quantity = parseFloat($('#quantity').val());
-      if(quantity == NaN){
+      if(isNaN(quantity)){
         alert('enter a number, please');
         $('#quantity').val('');
         return false;
