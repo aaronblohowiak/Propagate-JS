@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>colors.js</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id="background"></div>
+<div id='container'>
+  
+  <div class='section'>
+    <div class='docs'><h1>colors.js</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>This file covers the colors demo. Most of it is pretty straightforward.</p>
+<p>The most interesting thing is <a href="#adding-automatically-updating-analogs">adding the analogs</a>
+which requires very little code, even though it is automatically wired up with all of the dynamic events, because it is wired to the data model.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>run when the document is ready</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>main data structure that all of the ui is based on
+we have three concrete values, and three derrived values</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">var</span> <span class="nx">color</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="nx">r</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="mi">160</span><span class="p">),</span>
+		<span class="nx">g</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="mi">90</span><span class="p">),</span>
+		<span class="nx">b</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="mi">45</span><span class="p">),</span>
+		<span class="nx">h</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">hsvByte</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+		<span class="p">}),</span>
+		<span class="nx">s</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">hsvByte</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}),</span>
+		<span class="nx">v</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">hsvByte</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+		<span class="p">})</span>
+	<span class="p">};</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>activate HSV propagation!</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;hsv&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">color</span><span class="p">[</span><span class="nx">c</span><span class="p">]();</span>
+	<span class="p">});</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>convienence for returning a 0-255 normalized version of HSV (0.0 - 1.0)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">function</span> <span class="nx">hsvByte</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">Color</span><span class="p">(</span><span class="nx">colorString</span><span class="p">()).</span><span class="nx">toHSV</span><span class="p">()[</span><span class="nx">index</span><span class="p">]</span> <span class="o">*</span> <span class="mi">255</span><span class="p">);</span>
+	<span class="p">}</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>takes a byte and makes sure it is between 0 - 255 (no overages or &lt;0)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">function</span> <span class="nx">byteConstrain</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="nx">input</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="p">}</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>return a 00-FF hex representation of a byte</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">function</span> <span class="nx">toOctet</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n</span> <span class="o">%</span> <span class="mi">256</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">+</span> <span class="nx">str</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+	<span class="p">}</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>return the RGB hex code of a color.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">function</span> <span class="nx">colorString</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">toOctet</span><span class="p">(</span><span class="nx">color</span><span class="p">.</span><span class="nx">r</span><span class="p">())</span> <span class="o">+</span> <span class="nx">toOctet</span><span class="p">(</span><span class="nx">color</span><span class="p">.</span><span class="nx">g</span><span class="p">())</span> <span class="o">+</span> <span class="nx">toOctet</span><span class="p">(</span><span class="nx">color</span><span class="p">.</span><span class="nx">b</span><span class="p">());</span>
+	<span class="p">}</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>function that will keep the main color panel up to date</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">var</span> <span class="nx">updateColor</span> <span class="o">=</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#combined&#39;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+			<span class="nx">backgroundColor</span><span class="o">:</span> <span class="nx">colorString</span><span class="p">()</span>
+		<span class="p">});</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#combined-hex&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">colorString</span><span class="p">());</span>
+	<span class="p">});</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <hr />
+<p>note: you probably don't want to go creating your HTML like this =)
+generate some buttons for user input</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">function</span> <span class="nx">createControl</span><span class="p">(</span><span class="nx">space</span><span class="p">,</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">num</span><span class="p">,</span> <span class="nx">valence</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;input class=&quot;controller&quot; type=&quot;submit&quot; data-channel=&quot;&#39;</span> <span class="o">+</span> <span class="nx">num</span> <span class="o">+</span> <span class="s1">&#39;&quot; data-valence=&quot;&#39;</span> <span class="o">+</span> <span class="nx">valence</span> <span class="o">+</span> <span class="s1">&#39;&quot; value=&quot;&#39;</span> <span class="o">+</span> <span class="nx">channel</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="nx">valence</span> <span class="o">+</span> <span class="s1">&#39;16&quot; data-space=&quot;&#39;</span> <span class="o">+</span> <span class="nx">space</span> <span class="o">+</span> <span class="s1">&#39;&quot;/&gt;&#39;</span><span class="p">);</span>
+	<span class="p">}</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>generate live controls for rgb, hsv</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="nx">$</span><span class="p">([</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="s1">&#39;HSV&#39;</span><span class="p">]).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">space</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">spacediv</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&#39;</span> <span class="o">+</span> <span class="nx">space</span> <span class="o">+</span> <span class="s1">&#39;&lt;/div&gt;&#39;</span><span class="p">);</span>
+		<span class="nx">$</span><span class="p">(</span><span class="nx">space</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">num</span><span class="p">,</span> <span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">plus</span> <span class="o">=</span> <span class="nx">createControl</span><span class="p">(</span><span class="nx">space</span><span class="p">,</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">num</span><span class="p">,</span> <span class="s1">&#39;+&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">minus</span> <span class="o">=</span> <span class="nx">createControl</span><span class="p">(</span><span class="nx">space</span><span class="p">,</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">num</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;div/&gt;&#39;</span><span class="p">);</span>
+			<span class="nx">div</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">plus</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">minus</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;span&gt; current &#39;</span> <span class="o">+</span> <span class="nx">channel</span> <span class="o">+</span> <span class="s1">&#39; value: &lt;span class=&quot;&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;-int&quot;/&gt;&lt;/span&gt;&lt;/span&gt;&#39;</span><span class="p">));</span>
+			<span class="nx">spacediv</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+		<span class="p">});</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#controls&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">spacediv</span><span class="p">);</span>
+	<span class="p">});</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>set up click handlers for the controls</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#controls .controller&#39;</span><span class="p">).</span><span class="nx">live</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>retrieve values from the dom</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+		<span class="kd">var</span> <span class="nx">space</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-space&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">chan</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-channel&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">valence</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-valence&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">delta</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">valence</span> <span class="o">+</span> <span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="nx">toString</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>
+		</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>initials the vars that both RGB and HSV use</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+		<span class="kd">var</span> <span class="nx">current</span><span class="p">,</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">newValue</span><span class="p">,</span> <span class="nx">modificationArray</span><span class="p">;</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Color space %s, channel %s, modifying %s8&quot;</span><span class="p">,</span> <span class="nx">space</span><span class="p">,</span> <span class="nx">chan</span><span class="p">,</span> <span class="nx">valence</span><span class="p">);</span>
+		</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>we have different approaches for updating if we are in RGB or HSV</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="k">if</span> <span class="p">(</span><span class="nx">space</span> <span class="o">==</span> <span class="s2">&quot;RGB&quot;</span><span class="p">)</span> <span class="p">{</span>
+			</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>convert from index to name</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+			<span class="nx">channel</span> <span class="o">=</span> <span class="s1">&#39;rgb&#39;</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">chan</span><span class="p">);</span>
+			</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>get the accessor</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  
+			<span class="nx">fn</span> <span class="o">=</span> <span class="nx">color</span><span class="p">[</span><span class="nx">channel</span><span class="p">];</span>
+			</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>get the current value</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>      
+			<span class="nx">current</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">();</span>
+			<span class="nx">newValue</span> <span class="o">=</span> <span class="nx">byteConstrain</span><span class="p">(</span><span class="nx">current</span> <span class="o">+</span> <span class="nx">delta</span><span class="p">);</span>
+			</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>call the setter with the new val,</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>       
+			<span class="nx">fn</span><span class="p">(</span><span class="nx">newValue</span><span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>We have to deal with HSV</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>       
+			<span class="nx">hsv</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Color</span><span class="p">(</span><span class="nx">colorString</span><span class="p">()).</span><span class="nx">toHSV</span><span class="p">();</span>
+			<span class="nx">current</span> <span class="o">=</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="nx">hsv</span><span class="p">[</span><span class="nx">chan</span><span class="p">];</span>
+			<span class="nx">newValue</span> <span class="o">=</span> <span class="nx">current</span> <span class="o">+</span> <span class="nx">delta</span><span class="p">;</span>
+			<span class="nx">modificationArray</span> <span class="o">=</span> <span class="p">[</span><span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">];</span>
+			<span class="nx">modificationArray</span><span class="p">[</span><span class="nx">chan</span><span class="p">]</span> <span class="o">=</span> <span class="nx">byteConstrain</span><span class="p">(</span><span class="nx">newValue</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">;</span>
+			<span class="nx">hsv</span> <span class="o">=</span> <span class="nx">hsv</span><span class="p">.</span><span class="nx">modify</span><span class="p">(</span><span class="nx">modificationArray</span><span class="p">);</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nx">r</span><span class="p">(</span><span class="nx">hsv</span><span class="p">.</span><span class="nx">red</span><span class="p">());</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nx">g</span><span class="p">(</span><span class="nx">hsv</span><span class="p">.</span><span class="nx">green</span><span class="p">());</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nx">b</span><span class="p">(</span><span class="nx">hsv</span><span class="p">.</span><span class="nx">blue</span><span class="p">());</span>
+		<span class="p">}</span>
+		</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>cancel default click handler</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>     
+		<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="p">});</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>make it so that our labels will update automagically!
+i can add these in whatever module I'd like
+no worrying about callback registration or anything.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  
+	<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;rgbhsv&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">num</span><span class="p">,</span> <span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">myInt</span> <span class="o">=</span> <span class="nx">color</span><span class="p">[</span><span class="nx">channel</span><span class="p">]();</span>
+			<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="nx">channel</span> <span class="o">+</span> <span class="s1">&#39;-int&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">myInt</span><span class="p">);</span>
+		<span class="p">})();</span>
+	<span class="p">});</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>stylize color swatches for rgb</p>
+<p>construct hex that has the info for just the current color channel
+and 00 for the other channels</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;rgb&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">num</span><span class="p">,</span> <span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">bg</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">myInt</span> <span class="o">=</span> <span class="nx">color</span><span class="p">[</span><span class="nx">channel</span><span class="p">]();</span>
+			<span class="kd">var</span> <span class="nx">myHex</span> <span class="o">=</span> <span class="nx">toOctet</span><span class="p">(</span><span class="nx">myInt</span><span class="p">);</span>
+			<span class="nx">$</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">num</span> <span class="o">==</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">bg</span> <span class="o">=</span> <span class="nx">bg</span> <span class="o">+</span> <span class="nx">myHex</span><span class="p">;</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">bg</span> <span class="o">=</span> <span class="nx">bg</span> <span class="o">+</span> <span class="s2">&quot;00&quot;</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">});</span>
+			<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+				<span class="nx">backgroundColor</span><span class="o">:</span> <span class="nx">bg</span>
+			<span class="p">});</span>
+		<span class="p">})();</span>
+	<span class="p">});</span>
+
+
+	<span class="nx">updateColor</span><span class="p">();</span>
+	
+	
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>function that will keep a complementary color up to date</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    
+	<span class="kd">var</span> <span class="nx">updateComplementary</span> <span class="o">=</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">complementary</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Color</span><span class="p">(</span><span class="nx">colorString</span><span class="p">()).</span><span class="nx">complementary</span><span class="p">().</span><span class="nx">toHEX</span><span class="p">();</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#complementary-hex&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">complementary</span><span class="p">);</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#complementary&#39;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+			<span class="nx">backgroundColor</span><span class="o">:</span> <span class="nx">complementary</span>
+		<span class="p">});</span>
+	<span class="p">});</span>
+	<span class="nx">updateComplementary</span><span class="p">();</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <h3><span id="adding-automatically-updating-analogs" href="adding-automatically-updating-analogs"> Adding Automatically Updating Analogs </span>this is all the code required then to add automatic updating of analogs</h3>
+<p>note that it doesnt have to worry about registering for rgb callbacks
+(that dependency is detected from colorString())
+also note that the callback for the event handler just sets values
+this way you just code the relationships between events and data
+and then the relationships between data and the view
+you keep these two things separate so it is nice and clean.
+this also lets you add other parts to the view
+without changing the event handling code</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    
+
+	<span class="kd">var</span> <span class="nx">analogOffsets</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="mi">1</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="mi">30</span> <span class="o">/</span> <span class="mf">360.0</span><span class="p">),</span>
+		<span class="mi">2</span><span class="o">:</span> <span class="nx">propagate</span><span class="p">(</span><span class="mi">330</span> <span class="o">/</span> <span class="mf">360.0</span><span class="p">)</span>
+	<span class="p">};</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <p>set the swatch and the label appropriately</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">var</span> <span class="nx">updateAnalogous</span> <span class="o">=</span> <span class="nx">propagate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">$</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">currentValue</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">analogOffsets</span><span class="p">[</span><span class="nx">value</span><span class="p">]());</span>
+			<span class="kd">var</span> <span class="nx">analog</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Color</span><span class="p">(</span><span class="nx">colorString</span><span class="p">()).</span><span class="nx">analogous</span><span class="p">(</span><span class="nx">currentValue</span><span class="p">).</span><span class="nx">toHEX</span><span class="p">();</span>
+			<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#analog&#39;</span> <span class="o">+</span> <span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;-hex&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">analog</span><span class="p">);</span>
+			<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#analog&#39;</span> <span class="o">+</span> <span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">()).</span><span class="nx">css</span><span class="p">({</span>
+				<span class="nx">backgroundColor</span><span class="o">:</span> <span class="nx">analog</span>
+			<span class="p">});</span>
+		<span class="p">});</span>
+	<span class="p">});</span>
+	<span class="nx">updateAnalogous</span><span class="p">();</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <p>set up analog binding to selectors</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre> 
+	<span class="kd">function</span> <span class="nx">updateAnalogOffsetsFromSelects</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">analogOffsets</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#analog1-selector&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
+		<span class="nx">analogOffsets</span><span class="p">[</span><span class="mi">2</span><span class="p">](</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#analog2-selector&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
+	<span class="p">}</span>
+	<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.analog-selector&#39;</span><span class="p">).</span><span class="nx">live</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">updateAnalogOffsetsFromSelects</span><span class="p">);</span>
+	<span class="nx">updateAnalogOffsetsFromSelects</span><span class="p">();</span>
+	</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div><div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p>and we're done!</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    
+<span class="p">});</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

@@ -4,14 +4,104 @@
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" href="/reset.css" type="text/css" media="screen" title="no title" charset="utf-8">
-	<script src="/propagate.js" type="text/javascript" charset="utf-8"></script>
-  
+	<link rel="stylesheet" href="reset.css" type="text/css" media="screen" title="no title" charset="utf-8">  
 	<title>propogate-js</title>
 	<meta name="author" content="Aaron Blohowiak">
+	<style>
+    body{
+      text-align:center;
+    }
+
+	  h1{
+	    font-size:48px;
+	  }
+	  
+	  #content{
+	   width:960px;
+	   margin: 0 auto;
+	   text-align:left;
+	  }
+	  
+    table{
+      margin-top:30px;
+    }
+    
+    th{
+      text-align:center;
+      color:#222;
+    }
+    td{
+      text-align: left;
+      padding: 0 20px;
+    }
+    
+    p{
+      margin: 30px;
+    }
+	</style>
 </head>
 
 <body>
+  <h1>Propagate-JS</h1>
+  <h2><a href="https://github.com/aaronblohowiak/Propagate-JS">Get the code!</a></h2>
   
+  <div id="content">
+    <table width="100%">
+      <thead>
+        <th>Industrial Explanation</th>
+        <th>Computer Science Explanation</th>
+      </thead>
+      <tr>
+        <td width="50%">
+          <p>If you have some functions that you want to get called whenever your data changes, you should use Propagate-JS.</p>
+          <p>It helps you to avoid manually setting up callbacks</p>
+          <p>When you use it, your views update automatically when your models do. Check out this <a href="demo/shopping_cart.html">demo/tutorial</a>.</p>
+        </td>
+        <td  width="50%">
+          <p>Propagate-JS performs a <a href="http://en.wikipedia.org/wiki/Call_stack" target="_blank">call stack</a> trace to compute the <a href="http://en.wikipedia.org/wiki/Transitive_closure" target="_blank">transitive closure</a> over the <a href="http://en.wikipedia.org/wiki/Data_dependency" target="_blank">data dependency</a> of a user's application.</p>
+          <p>It is <a href="http://en.wikipedia.org/wiki/Reactive_programming" target="_blank">reactive programming</a> for the browser.</p>
+          <p>The primary goal is to implement <a href="http://en.wikipedia.org/wiki/Incremental_computing" target="_blank">Incremental Computing</a> in JavaScript without external dependencies.</p>
+        </td>
+      </tr>
+      <thead>
+        <th>
+          API
+        </th>
+        <th>
+          Demos
+        </th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <p>
+               propagate() is a new global.
+            </p>
+            <p>
+              Call propagate with a function and it returns a tracing version of that function. You must call the returned function at least once for tracing to begin. It will be called again whenever any of its traced dependencies change. 
+            </p>
+            <p>
+              Call propagate with any other argument (data, ie: string, number, etc) and it returns a setter-accessor. Call the accessor with no arguments to retrieve the latest value; call it with a single argument to set the value (and implicitly re-evaluate all traced functions that depend on this value.)
+            </p>
+          </td>
+          <td>
+            <p>The demos happen to use jQuery to manipulate the DOM, but it is <strong>not</strong> required to use Propagate-JS.</p>
+            <p>The <a href="demo/shopping_cart.html">Shopping Cart</a> is a simple example, extremely well documented.  Reading through the code presented at the bottom is a great first step in learning about Propagate-JS</p>
+            <p><a href="demo/colors.html"> Colors</a> is a more complex example.  shows integration with a jQuery plugin that performs color calculation</p>
+          </td>
+        </tr>
+    </table>
+    
+    <h3>Related Work</h3>
+    <ul>
+      <li> Knockout JS, Backbone JS, SproutCore, Objective-J, Flex </li>
+      <li> Desktop: WPF, Spreadsheets. </li>
+    </ul>
+      
+    <hr/>
+    Copyright (c) 2010 <a href="http://aaronblohowiak.com">Aaron Blohowiak</a>
+
+  </div>
+    
 </body>
 </html>
