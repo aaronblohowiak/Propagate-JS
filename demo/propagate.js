@@ -1,52 +1,51 @@
 if (typeof console == "undefined" || typeof console.log == "undefined")
   var console = { log: function() {} };
   
-propagate = (function(){
+propagate = (function () {
   var tracingStack = [];
   
   //utility function that removes an item from an array on obj
-  function removeFromArray(obj, name, item){
-    var i = 0;
-    while(i < obj[name].length){
-      if(obj[name][i] == item){
-        return obj[name].splice(i, 1);
-      }
-      i = i+1;
+  function removeFromArray (obj, name, item) {
+    var i = -1, arr = obj[name], l = arr.length;
+    while (++i < l) {
+      if (arr[i] == item) return arr.splice(i, 1);
     }
     return null;
-  };
+  }
   
-  function trace(accessed){
-    var tracingStackDepth = tracingStack.length;
-  
-    if( tracingStackDepth > 0){
-       var caller = tracingStack[ tracingStackDepth - 1 ];
+  function trace (accessed) {
+    var depth = tracingStack.length
+      , caller;
+    if (depth) {
+       caller = tracingStack[ depth - 1 ];
        accessed.composes.push(caller);
        caller.composedOf.push(accessed);
        
        //console.log("tracing", caller.fn.toString(), "adding dependent", accessed.fn.toString());
-    };
-  };
+    }
+  }
   
   function clearDependencies(fn){
     var child = null;
     
-    for (var i=0; i < fn.composedOf.length; i++) {
+    for (var i=0, l = fn.composedOf.length; i < l; i++) {
       child = fn.composedOf[i];
       removeFromArray(child, "composes", fn);
-    };
+    }
     
     fn.composedOf = [];
-  };
+  }
   
   function callDependents(wrappedFn){
-    for (var i = wrappedFn.composes.length - 1; i >= 0; i--){
-      if(typeof(wrappedFn.composes[i].fn) == "function"){
-        wrappedFn.composes[i].fn();
-        callDependents(wrappedFn.composes[i]);
+    var c = wrappedFn.composes 
+      , i = c.length;
+    while (i--) {
+      if (typeof(c[i].fn) == "function") {
+        c[i].fn();
+        callDependents(c[i]);
       }
-    };
-  };
+    }
+  }
   
   function wrap(fn){
     function wrappedFn(){
@@ -64,18 +63,16 @@ propagate = (function(){
     wrappedFn.composedOf = [];
     wrappedFn.composes = [];
     return wrappedFn;
-  };
+  }
   
   
   function wrapAsAccessor(val){
     function wrappedFn(){  
-      
-      if(arguments.length == 0){
-        trace(wrappedFn);
-        return val;
-      }else{
+      if (arguments.length) {
         val = arguments[0];
         callDependents(wrappedFn);
+      } else {
+        trace(wrappedFn);
       }
       return val;
     }
@@ -84,7 +81,7 @@ propagate = (function(){
     wrappedFn.composedOf = []; //should always be empty!
     wrappedFn.composes = [];
     return wrappedFn;
-  };
+  }
   
   function propagate(arg){
     if(typeof(arg) == "function"){
