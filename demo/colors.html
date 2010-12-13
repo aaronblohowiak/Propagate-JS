@@ -138,6 +138,10 @@
       $('#complementary').css({backgroundColor: complementary});
     });
     
+    
+    //---------------
+    // note: you probably don't want to go creating your HTML like this =)
+
     //generate some buttons for user input
     function createControl(space, channel, num, valence){
       return $('<input class="controller" type="submit" data-channel="'+num+'" data-valence="'+valence+'" value="'+channel+': '+valence+'16" data-space="'+space+'"/>');
@@ -159,7 +163,7 @@
     });
 
 
-      
+    //set up click handlers for the controls
     $('#controls .controller').live('click', function(){
       var space = $(this).attr('data-space');
       var chan = $(this).attr('data-channel');
