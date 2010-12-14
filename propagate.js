@@ -6,7 +6,7 @@ propagate = (function () {
   
   //utility function that removes an item from an array on obj
   function removeFromArray (obj, name, item) {
-    var i = -1, arr = obj[name], l = arr.length;
+    var arr = obj[name], l = arr.length, i = -1;
     while (++i < l) {
       if (arr[i] == item) return arr.splice(i, 1);
     }
@@ -14,8 +14,7 @@ propagate = (function () {
   }
   
   function trace (accessed) {
-    var depth = tracingStack.length
-      , caller;
+    var depth = tracingStack.length, caller;
     if (depth) {
        caller = tracingStack[ depth - 1 ];
        accessed.composes.push(caller);
@@ -26,7 +25,7 @@ propagate = (function () {
   }
   
   function clearDependencies(fn){
-    var child = null;
+    var child;
     
     for (var i=0, l = fn.composedOf.length; i < l; i++) {
       child = fn.composedOf[i];
@@ -37,8 +36,7 @@ propagate = (function () {
   }
   
   function callDependents(wrappedFn){
-    var c = wrappedFn.composes 
-      , i = c.length;
+    var c = wrappedFn.composes, i = c.length;
     while (i--) {
       if (typeof(c[i].fn) == "function") {
         c[i].fn();
