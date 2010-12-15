@@ -4,14 +4,15 @@
 ## What?
 ###Simple change propagation for JS.
 
-    var obj = propagate({
-      'title': "propagate-JS",
-      'version': "0.0.1"
-    })
+    var obj = {
+      'title': propagate("propagate-JS"),
+      'version': propagate("0.0.1")
+    };
 
     propagate(function(){
       console.log(obj.title()+" "+obj.version());
     })
+    
     //gets called immediately, will output "propagate-JS 0.0.1" to console
 
     obj.version("0.0.2");
@@ -27,9 +28,9 @@ This should work in the browser as well as on the server.
 
 Here we demonstrate that you can have propagation through multiple levels.
 
-    var obj = propagate({
-      'timeLeft': 10
-    })
+    var obj = {
+      'timeLeft': propagate(10)
+    };
 
     var announcement = propagate(function(){
       var count = obj.timeLeft();
